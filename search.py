@@ -218,12 +218,15 @@ def uniformCostSearch(problem):
 
         #print(start_node)
         fringe.push(start_node, 0)
-        visited.add(start_node[0])
+        #visited.add(start_node[0])
         while(not fringe.isEmpty()):
             #print(node_parent)
             node = fringe.pop()
-            print(node)
+            if node[0] in visited:
+                continue
+            print(node[0])
             visited.add(node[0])
+            print(visited)
             if problem.isGoalState(node[0]):
                 cur_node = node
                 while(cur_node[0] != start_node[0]):
@@ -241,8 +244,8 @@ def uniformCostSearch(problem):
                 candidate = list(candidate)
                 #getting the direction path
                 if candidate[0] not in visited:
-                    print(candidate[2], node[2])
-                    print(candidate, node)
+                    #print(candidate[2], node[2])
+                    #print(candidate, node)
                     candidate[2] += node[2]
                     node_parent[tuple(candidate)] = node
                     #print(candidate[0])
