@@ -258,6 +258,7 @@ def uniformCostSearch(problem):
         return ([a[1] for a in reverse])
 
 def nullHeuristic(state, problem=None):
+
     """
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
@@ -265,9 +266,53 @@ def nullHeuristic(state, problem=None):
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+            visited = set()
+            fringe = util.PriorityQueue()
+            node_parent = {}
+            return_path = []
+            start_node = [problem.getStartState(), "", 0]
+
+            #print(start_node)
+            fringe.push(start_node, 0)
+            #visited.add(start_node[0])
+            while(not fringe.isEmpty()):
+                #print(node_parent)
+                node = fringe.pop()
+                if node[0] in visited:
+                    continue
+                print(node[0])
+                visited.add(node[0])
+                print(visited)
+                if problem.isGoalState(node[0]):
+                    cur_node = node
+                    while(cur_node[0] != start_node[0]):
+
+                        #print("node", cur_node[0])
+                        return_path.append(cur_node)
+                        cur_node = node_parent[cur_node]
+                    reverse = return_path[::-1]
+                    return ([a[1] for a in reverse])
+
+                #print(node)
+                #print("expanded", node)
+                candidates = problem.getSuccessors(node[0])
+                for candidate in candidates:
+                    candidate = list(candidate)
+                    #getting the direction path
+                    if candidate[0] not in visited:
+                        #print(candidate[2], node[2])
+                        #print(candidate, node)
+                        candidate[2] += node[2]
+                        node_parent[tuple(candidate)] = node
+                        #print(candidate[0])
+                        fringe.push(tuple(candidate), candidate[2]+heuristic(candidate[0], problem))
+                        #visited.add(candidate[0])
+
+
+
+            reverse = return_path[::-1]
+            return ([a[1] for a in reverse])
+
 
 
 # Abbreviations
