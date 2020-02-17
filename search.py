@@ -165,6 +165,11 @@ def breadthFirstSearch(problem):
     #print "Next successors:", problem.getSuccessors(problem.getSuccessors(problem.getStartState())[0][0])
     #print dir(problem)
     #print Directions.SOUTH
+
+    from searchAgents import CornersProblem
+    if isinstance(problem, CornersProblem):
+        print('Corners problem!')
+
     visited = set()
     fringe = util.Queue()
     node_parent = {}
