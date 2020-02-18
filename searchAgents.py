@@ -456,6 +456,19 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
         self.searchType = FoodSearchProblem
 
+def fill_in_dist(problem):
+    inf = 10000000
+    walls = problem.walls
+    output = [[0 for x in range(len(walls.data))] for y in range(len(walls.data[0]))]
+
+    for i in range(len(output)):
+        for j in range(len(output[0])):
+            mazeDistance((1,1), (4,6), problem)
+            #if
+    #r i in range
+
+
+
 
 def foodHeuristic(state, problem):
     """
@@ -487,14 +500,20 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
 
-    num_food = 0
-    dist = 0
+    if len(problem.heuristicInfo) == 0:
+        fill_in_dist(problem)
+
+    min_dist = 999999
+    max_dist = 0
     for i in range(foodGrid.width):
         for j in range(foodGrid.height):
             if foodGrid[i][j]:
-                print("Food at: " + str(i) + ", " + str(j))
-
-    return 0
+                #d = (abs(position[0] - i) ** 2 + abs(position[1] - j) ** 2) ** 0.5
+                d = abs(position[0] - i) + abs(position[1] - j)
+                if d > max_dist:
+                    max_dist = d
+                # d = abs(position[0] - i) + abs(position[1] - j)
+    return max_dist
 
 
 class ClosestDotSearchAgent(SearchAgent):
