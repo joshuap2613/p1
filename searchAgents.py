@@ -317,7 +317,7 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         x, y, ll, ul, lr, ur = state
-        if ll == 1 and ul == 1 and lr == 1 and ur ==1:
+        if ll == 1 and ul == 1 and lr == 1 and ur == 1:
             return True
         else:
             return False
@@ -345,13 +345,8 @@ class CornersProblem(search.SearchProblem):
                     if (nextx, nexty) == self.corners[i]:
                         cs[i] = 1
                 nextState = (nextx, nexty) + tuple(cs)
-                successors.append((nextState, action))
-
-        # Bookkeeping for display purposes
-        #if state not in self._visited:
-        #    self._visited[state] = True
-        #    self._visitedlist.append(state)
-
+                cost = 1
+                successors.append((nextState, action, cost))
         self._expanded += 1  # DO NOT CHANGE
         return successors
 
@@ -385,8 +380,13 @@ def cornersHeuristic(state, problem):
     corners = problem.corners  # These are the corner coordinates
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"
-    return 0  # Default to trivial solution
+    x, y, ll, ul, lr, ur = state
+    c = [ll, ul, lr, ur]
+    d = [0, 0, 0, 0]
+    for i in range(len(c)):
+        if c[i] == 0:
+            d[i] = abs(x - corners[i][0]) + abs(y - corners[i][1])
+    return max(d)
 
 
 class AStarCornersAgent(SearchAgent):
@@ -486,7 +486,14 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
+
+    num_food = 0
+    dist = 0
+    for i in range(foodGrid.width):
+        for j in range(foodGrid.height):
+            if foodGrid[i][j]:
+                print("Food at: " + str(i) + ", " + str(j))
+
     return 0
 
 
