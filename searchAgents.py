@@ -230,6 +230,63 @@ class PositionSearchProblem(search.SearchProblem):
         return cost
 
 
+class PositionProblem(search.SearchProblem):
+    """
+    A search problem defines the state space, start state, goal test, successor
+    function and cost function.  This search problem can be used to find paths
+    to a particular point on the pacman board.
+
+    The state space consists of (x,y) positions in a pacman game.
+
+    Note: this search problem is fully specified; you should NOT change it.
+    """
+
+    def __init__(self, start=None, goal=None, costFn=lambda x: 1, walls=None):
+        """
+        Stores the start and goal.
+
+        gameState: A GameState object (pacman.py)
+        costFn: A function from a search state (tuple) to a non-negative number
+        goal: A position in the gameState
+        """
+        self.walls = walls
+        self.startState = start
+        self.goal = goal
+        self.costFn = costFn
+
+    def getStartState(self):
+        return self.startState
+
+    def isGoalState(self, state):
+        isGoal = state == self.goal
+        return isGoal
+
+    def getSuccessors(self, state):
+
+        successors = []
+        for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
+            x, y = state
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                nextState = (nextx, nexty)
+                cost = self.costFn(nextState)
+                successors.append((nextState, action, cost))
+        return successors
+
+    def getCostOfActions(self, actions):
+        if actions == None: return 999999
+        x, y = self.getStartState()
+        cost = 0
+        for action in actions:
+            # Check figure out the next state and see whether its' legal
+            dx, dy = Actions.directionToVector(action)
+            x, y = int(x + dx), int(y + dy)
+            if self.walls[x][y]: return 999999
+            cost += self.costFn((x, y))
+        return cost
+
+
 class StayEastSearchAgent(SearchAgent):
     """
     An agent for position search with a cost function that penalizes being in
@@ -456,19 +513,11 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
         self.searchType = FoodSearchProblem
 
-def fill_in_dist(problem):
-    inf = 10000000
-    walls = problem.walls
-    output = [[0 for x in range(len(walls.data))] for y in range(len(walls.data[0]))]
-
-    for i in range(len(output)):
-        for j in range(len(output[0])):
-            mazeDistance((1,1), (4,6), problem)
-            #if
-    #r i in range
-
-
-
+def set_distances(position, foodGrid, problem):
+    for food in foodGrid.asList():
+        prob = PositionProblem(start=position, goal=food, walls=problem.walls)
+        length = len(search.bfs(prob))
+        problem.heuristicInfo[(position, food)] = len(search.bfs(prob))
 
 def foodHeuristic(state, problem):
     """
@@ -500,20 +549,17 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
 
-    if len(problem.heuristicInfo) == 0:
-        fill_in_dist(problem)
+    all_dist = [0]
+    for food in foodGrid.asList():
+        try:
+            all_dist.append(problem.heuristicInfo[(problem, food)])
+        except:
+            prob = PositionProblem(start=position, goal=food, walls=problem.walls)
+            length = len(search.bfs(prob))
+            problem.heuristicInfo[(position, food)] = length
+            all_dist.append(length)
 
-    min_dist = 999999
-    max_dist = 0
-    for i in range(foodGrid.width):
-        for j in range(foodGrid.height):
-            if foodGrid[i][j]:
-                #d = (abs(position[0] - i) ** 2 + abs(position[1] - j) ** 2) ** 0.5
-                d = abs(position[0] - i) + abs(position[1] - j)
-                if d > max_dist:
-                    max_dist = d
-                # d = abs(position[0] - i) + abs(position[1] - j)
-    return max_dist
+    return max(all_dist)
 
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -544,9 +590,7 @@ class ClosestDotSearchAgent(SearchAgent):
         food = gameState.getFood()
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.bfs(problem)
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -581,9 +625,10 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x, y = state
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if self.food[x][y]:
+            return True
+        else:
+            return False
 
 
 def mazeDistance(point1, point2, gameState):
