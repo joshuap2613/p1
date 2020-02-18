@@ -145,74 +145,31 @@ def depthFirstSearch(problem):
     #util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
-    """
-    Search the deepest nodes in the search tree first.
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    """
-    "*** YOUR CODE HERE ***"
-    #print "Start:", problem.getStartState()
-    #print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    #print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    #print "Next successors:", problem.getSuccessors(problem.getSuccessors(problem.getStartState())[0][0])
-    #print dir(problem)
-    #print Directions.SOUTH
-
-    from searchAgents import CornersProblem
-    if isinstance(problem, CornersProblem):
-        print('Corners problem!')
-
     visited = set()
     fringe = util.Queue()
     node_parent = {}
     return_path = []
     start_node = [problem.getStartState(), "", 0]
 
-    #print(start_node)
     fringe.push(start_node)
     visited.add(start_node[0])
-    while(not fringe.isEmpty()):
-        #print(node_parent)
+    while not fringe.isEmpty():
         node = fringe.pop()
-        #visited.add(node[0])
         if problem.isGoalState(node[0]):
             cur_node = node
-            while(cur_node[0] != start_node[0]):
-
-                #print("node", cur_node[0])
+            while cur_node[0] != start_node[0]:
                 return_path.append(cur_node)
                 cur_node = node_parent[cur_node]
             reverse = return_path[::-1]
-            return ([a[1] for a in reverse])
+            return [a[1] for a in reverse]
 
-        #print(node)
-        #print("expanded", node)
         candidates = problem.getSuccessors(node[0])
         for candidate in candidates:
-
-            #getting the direction path
             if candidate[0] not in visited:
                 node_parent[candidate] = node
-                #print(candidate[0])
                 fringe.push(candidate)
                 visited.add(candidate[0])
-
-
-
-
-
-
-    reverse = return_path[::-1]
-    return ([a[1] for a in reverse])
-
+    return None
 
 def uniformCostSearch(problem):
         visited = set()
